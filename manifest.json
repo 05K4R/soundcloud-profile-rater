@@ -6,10 +6,21 @@
 	"version": "0.1.0",
 
 	"browser_action": {
-		"default_title": "Rate song"
+		"default_title": "Rate song",
+		"default_popup": "popup.html"
 	},
 
 	"permissions": [
-		"activeTab"
+		"activeTab",
+		"tabs",
+		"<all_urls>"
+	],
+
+	"content_scripts": [
+		{
+			"matches": [ "https://soundcloud.com/stream"],
+			"js": ["content_script.js"],
+			"run_at": "document_end"
+		}
 	]
 }
