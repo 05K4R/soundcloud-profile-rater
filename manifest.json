@@ -5,16 +5,14 @@
 	"description": "Allows you to rate posts or reposts by profiles, determining if they're worth following.",
 	"version": "0.1.0",
 
-	"browser_action": {
-		"default_title": "Rate song",
-		"default_popup": "popup.html"
-	},
-
 	"permissions": [
-		"activeTab",
-		"tabs",
-		"<all_urls>"
+		"activeTab"
 	],
+
+	"background": {
+		"persistent": false,
+		"scripts": ["background.js"]
+	},
 
 	"content_scripts": [
 		{
@@ -22,5 +20,10 @@
 			"js": ["content_script.js"],
 			"run_at": "document_end"
 		}
-	]
+	],
+
+	"browser_action": {
+		"default_title": "Rate song",
+		"default_popup": "popup.html"
+	}
 }
