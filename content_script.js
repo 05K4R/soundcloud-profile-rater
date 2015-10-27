@@ -7,8 +7,9 @@ var initialObserver = new MutationObserver(function(mutations, observer) {
 	if (currentSongTarget) {
 		var songLink = currentSongTarget.getAttribute('href');
 
-		songLink = songLink.substr(1);
-		songLink = songLink.split('/');
+		// songLink is formatted as /[profile]/[song]
+		songLink = songLink.substr(1); // strip leading /
+		songLink = songLink.split('/'); // place [profile] in songLink[0] and [song] in songLink[1]
 
 		chrome.runtime.sendMessage(
 			{
