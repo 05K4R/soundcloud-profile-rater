@@ -8,6 +8,8 @@ chrome.runtime.sendMessage( {'subject': 'getCurrentSong'}, function(response) {
 	setChildTextNode('profile', response.profile);
 
 	setChildTextNode('reposted-by', response.reposter);
+
+	setChildTextNode('action', response.action);
 });
 
 document.addEventListener('DOMContentLoaded', function () {
