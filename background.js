@@ -2,6 +2,7 @@ var currentSong;
 var profile;
 var reposter;
 var reposterObject = {};
+var likePercent;
 
 /*
 key: username
@@ -12,24 +13,37 @@ value: {
         {
             profile: string
             song: string
+			date: Date
         }
     ]
     dislikes: [
         {
             profile: string
             song: string
+			date: Date
         }
     ]
 }
 */
 
+function updatePercent() {
+	likePercent = (reposterObject.likes).length /
+		((reposterObject.likes).length + (reposterObject.dislikes).length)
+
+	likePercent = (likePercent * 100).toFixed();
+	likePercent = likePercent + "%";
+}
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.subject === 'getCurrentSong') {
+		updatePercent();
+
 		var response = {
 			song: currentSong,
 			profile: profile,
 			reposter: reposter,
-			action: JSON.stringify(reposterObject)
+			percent: likePercent,
+			action: JSON.stringify("Tvärdåligt")
 		}
 
 		sendResponse(response);
@@ -46,9 +60,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 					totalLikes: 0,
 					totalDislikes: 0,
 					likes: [],
-					dislikes: []
+					dislikes: [],
 				}
 			}
+
+			updatePercent();
 
 			sendResponse("Song updated");
 		});
@@ -56,32 +72,60 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	} else if (request.subject === 'likeSong') {
 		reposterObject.totalLikes++;
 
+		var today = new Date().toJSON();
+
 		reposterObject.likes.push({
 			profile: profile,
-			song: currentSong
+			song: currentSong,
+			date: today
 		});
+
+		updatePercent();
 
 		var object = {};
 		object[reposter] = reposterObject;
 
 		chrome.storage.sync.set(object, function() {
-			sendResponse("Liked and saved!");
+			var response = {
+				song: currentSong,
+				profile: profile,
+				reposter: reposter,
+				percent: likePercent,
+				action: "Liked and saved!"
+			}
+
+			sendResponse(response);
 		});
+
 		return true;
 	} else if (request.subject === 'dislikeSong') {
 		reposterObject.totalDislikes++;
 
+		var today = new Date().toJSON();
+
 		reposterObject.dislikes.push({
 			profile: profile,
-			song: currentSong
+			song: currentSong,
+			date: today
 		});
+
+		updatePercent();
 
 		var object = {};
 		object[reposter] = reposterObject;
 
 		chrome.storage.sync.set(object, function() {
-			sendResponse("Disliked and saved!");
+			var response = {
+				song: currentSong,
+				profile: profile,
+				reposter: reposter,
+				percent: likePercent,
+				action: "Disliked and saved!"
+			}
+
+			sendResponse(response);
 		});
+
 		return true;
 	}
 	return false;
