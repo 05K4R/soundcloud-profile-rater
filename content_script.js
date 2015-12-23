@@ -31,7 +31,7 @@ function getSongInfo(songLink) {
 	var song = songLink.substr(1); // strip leading /
 	song = song.split('/'); // place [profile] in song[0] and [song] in song[1]
 
-	var streamSongs = document.querySelectorAll('.soundTitle');
+	var streamSongs = document.querySelectorAll('.streamContext');
 
 	var reposter;
 
@@ -42,8 +42,9 @@ function getSongInfo(songLink) {
 
 		// if the current playing song is found, take the reposter value
 		if (title.getAttribute('href') === songLink) {
-			reposter = item.querySelector('.actorUser').getAttribute('href');
+			reposter = item.querySelector('.soundContext__usernameLink').getAttribute('href');
 			reposter = reposter.substr(1);
+			break;
 		}
 	}
 
