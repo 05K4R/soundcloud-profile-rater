@@ -3,35 +3,62 @@ var profile;
 var reposter;
 var reposterObject = {};
 var likePercent;
+var okayPercent;
+var dislikePercent;
 
 /*
 key: username
 value: {
-    totalLikes: int
-    totalDislikes: int
-    likes: [
-        {
-            profile: string
-            song: string
+	totalLikes: int
+	totalDislikes: int
+	likes: [
+		{
+			profile: string
+			song: string
 			date: Date
-        }
-    ]
-    dislikes: [
-        {
-            profile: string
-            song: string
+		}
+	]
+	okays: [
+		{
+		profile: string
+		song: string
+		date: Date
+		}
+	]
+	dislikes: [
+		{
+			profile: string
+			song: string
 			date: Date
-        }
-    ]
+		}
+	]
 }
 */
 
 function updatePercent() {
 	likePercent = (reposterObject.likes).length /
-		((reposterObject.likes).length + (reposterObject.dislikes).length)
+		((reposterObject.likes).length +
+		(reposterObject.dislikes).length +
+		(reposterObject.okays).length)
 
 	likePercent = (likePercent * 100).toFixed();
 	likePercent = likePercent + '%';
+
+	dislikePercent = (reposterObject.dislikes).length /
+		((reposterObject.likes).length +
+		(reposterObject.dislikes).length +
+		(reposterObject.okays).length)
+
+	dislikePercent = (dislikePercent * 100).toFixed();
+	dislikePercent = dislikePercent + '%';
+
+	okayPercent = (reposterObject.okays).length /
+		((reposterObject.likes).length +
+		(reposterObject.dislikes).length +
+		(reposterObject.okays).length)
+
+	okayPercent = (okayPercent * 100).toFixed();
+	okayPercent = okayPercent + '%';
 }
 
 function constructResponse(action) {
@@ -39,7 +66,9 @@ function constructResponse(action) {
 		song: currentSong,
 		profile: profile,
 		reposter: reposter,
-		percent: likePercent,
+		likePercent: likePercent,
+		dislikePercent: dislikePercent,
+		okayPercent: okayPercent,
 		action: action
 	}
 
@@ -61,9 +90,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			} else {
 				reposterObject = {
 					totalLikes: 0,
+					totalOkays: 0,
 					totalDislikes: 0,
 					likes: [],
 					dislikes: [],
+					okays: [],
 				}
 			}
 
@@ -108,6 +139,26 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		chrome.storage.sync.set(object, function() {
 			updatePercent();
 			sendResponse(constructResponse('Disliked and saved!'));
+		});
+
+		return true;
+	} else if (request.subject === 'okaySong') {
+		reposterObject.totalOkays++;
+
+		var today = new Date().toJSON();
+
+		reposterObject.okays.push({
+			profile: profile,
+			song: currentSong,
+			date: today
+		});
+
+		var object = {};
+		object[reposter] = reposterObject;
+
+		chrome.storage.sync.set(object, function() {
+			updatePercent();
+			sendResponse(constructResponse('Okayd and saved!'));
 		});
 
 		return true;
