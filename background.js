@@ -36,26 +36,19 @@ value: {
 */
 
 function updatePercent() {
-	likePercent = (reposterObject.likes).length /
-		((reposterObject.likes).length +
+	var totalVotes = (reposterObject.likes).length +
 		(reposterObject.dislikes).length +
-		(reposterObject.okays).length)
+		(reposterObject.okays).length;
+
+	likePercent = (reposterObject.likes).length / totalVotes;
+	okayPercent = (reposterObject.okays).length / totalVotes;
+	dislikePercent = (reposterObject.dislikes).length / totalVotes;
 
 	likePercent = (likePercent * 100).toFixed();
 	likePercent = likePercent + '%';
 
-	dislikePercent = (reposterObject.dislikes).length /
-		((reposterObject.likes).length +
-		(reposterObject.dislikes).length +
-		(reposterObject.okays).length)
-
 	dislikePercent = (dislikePercent * 100).toFixed();
 	dislikePercent = dislikePercent + '%';
-
-	okayPercent = (reposterObject.okays).length /
-		((reposterObject.likes).length +
-		(reposterObject.dislikes).length +
-		(reposterObject.okays).length)
 
 	okayPercent = (okayPercent * 100).toFixed();
 	okayPercent = okayPercent + '%';

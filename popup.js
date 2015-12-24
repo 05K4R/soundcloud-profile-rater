@@ -7,10 +7,14 @@ chrome.runtime.sendMessage( {'subject': 'getCurrentSong'}, function(response) {
 	setChildTextNode('profile', response.profile);
 	setChildTextNode('reposted-by', response.reposter);
 	setChildTextNode('action', response.action);
-	setChildTextNode('like-percent', response.likePercent);
-	setChildTextNode('okay-percent', response.okayPercent);
-	setChildTextNode('dislike-percent', response.dislikePercent);
+	updatePercentages(response.likePercent, response.okayPercent, response.dislikePercent);
 });
+
+function updatePercentages(like, okay, dislike) {
+	setChildTextNode('like-percent', like);
+	setChildTextNode('okay-percent', okay);
+	setChildTextNode('dislike-percent', dislike);
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('like').addEventListener('click', likeSong);
@@ -21,26 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
 function likeSong() {
 	chrome.runtime.sendMessage( {'subject': 'likeSong'}, function(response) {
 		setChildTextNode('action', response.action);
-		setChildTextNode('like-percent', response.likePercent);
-		setChildTextNode('okay-percent', response.okayPercent);
-		setChildTextNode('dislike-percent', response.dislikePercent);
+		updatePercentages(response.likePercent, response.okayPercent, response.dislikePercent);
 	});
 }
 
 function dislikeSong() {
 	chrome.runtime.sendMessage( {'subject': 'dislikeSong'}, function(response) {
 		setChildTextNode('action', response.action);
-		setChildTextNode('like-percent', response.likePercent);
-		setChildTextNode('okay-percent', response.okayPercent);
-		setChildTextNode('dislike-percent', response.dislikePercent);
+		updatePercentages(response.likePercent, response.okayPercent, response.dislikePercent);
 	});
 }
 
 function okaySong() {
 	chrome.runtime.sendMessage( {'subject': 'okaySong'}, function(response) {
 		setChildTextNode('action', response.action);
-		setChildTextNode('like-percent', response.likePercent);
-		setChildTextNode('okay-percent', response.okayPercent);
-		setChildTextNode('dislike-percent', response.dislikePercent);
+		updatePercentages(response.likePercent, response.okayPercent, response.dislikePercent);
 	});
 }
