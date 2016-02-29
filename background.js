@@ -36,6 +36,7 @@ value: {
 */
 
 function updatePercent() {
+	console.log(reposterObject);
 	var totalVotes = (reposterObject.likes).length +
 		(reposterObject.dislikes).length +
 		(reposterObject.okays).length;
@@ -98,18 +99,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	} else if (request.subject === 'likeSong') {
 		reposterObject.totalLikes++;
 
-		var today = new Date().toJSON();
+		var reposter = getUpdatedReposter(profile, currentSong, reposterObject.likes);
 
-		reposterObject.likes.push({
-			profile: profile,
-			song: currentSong,
-			date: today
-		});
-
-		var object = {};
-		object[reposter] = reposterObject;
-
-		chrome.storage.sync.set(object, function() {
+		chrome.storage.sync.set(reposter, function() {
 			updatePercent();
 			sendResponse(constructResponse('Liked and saved!'));
 		});
@@ -118,18 +110,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	} else if (request.subject === 'dislikeSong') {
 		reposterObject.totalDislikes++;
 
-		var today = new Date().toJSON();
+		var reposter = getUpdatedReposter(profile, currentSong, reposterObject.dislikes);
 
-		reposterObject.dislikes.push({
-			profile: profile,
-			song: currentSong,
-			date: today
-		});
-
-		var object = {};
-		object[reposter] = reposterObject;
-
-		chrome.storage.sync.set(object, function() {
+		chrome.storage.sync.set(reposter, function() {
 			updatePercent();
 			sendResponse(constructResponse('Disliked and saved!'));
 		});
@@ -138,18 +121,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	} else if (request.subject === 'okaySong') {
 		reposterObject.totalOkays++;
 
-		var today = new Date().toJSON();
+		var reposter = getUpdatedReposter(profile, currentSong, reposterObject.okays);
 
-		reposterObject.okays.push({
-			profile: profile,
-			song: currentSong,
-			date: today
-		});
-
-		var object = {};
-		object[reposter] = reposterObject;
-
-		chrome.storage.sync.set(object, function() {
+		chrome.storage.sync.set(reposter, function() {
 			updatePercent();
 			sendResponse(constructResponse('Okayd and saved!'));
 		});
@@ -157,4 +131,54 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		return true;
 	}
 	return false;
+});
+
+function getUpdatedReposter(profile, song, array) {
+	var today = new Date().toJSON();
+
+	var alreadyRated = false;
+
+	removeSong(profile, song, reposterObject.likes);
+	removeSong(profile, song, reposterObject.dislikes);
+	removeSong(profile, song, reposterObject.okays);
+
+	array.push({
+		profile: profile,
+		song: song,
+		date: today
+	});
+
+	var object = {};
+	object[reposter] = reposterObject;
+
+	return object;
+}
+
+function removeSong(profile, song, array) {
+	for (var i = 0; i < array.length; i++) {
+		if (array[i].song === song && array[i].profile === profile) {
+			array.splice(i, 1);
+		}
+	}
+}
+
+// Following snippet borrowed from Google's Chrome Extension examples
+// When the extension is installed or upgraded ...
+chrome.runtime.onInstalled.addListener(function() {
+	// Replace all rules ...
+	chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+		// With a new rule ...
+		chrome.declarativeContent.onPageChanged.addRules([
+			{
+				// That fires when a page's URL contains 'soundcloud.com/stream' ...
+				conditions: [
+					new chrome.declarativeContent.PageStateMatcher({
+						pageUrl: { urlContains: 'soundcloud.com/stream' },
+					})
+				],
+				// And shows the extension's page action.
+				actions: [ new chrome.declarativeContent.ShowPageAction() ]
+			}
+		]);
+	});
 });
