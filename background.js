@@ -48,12 +48,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         sendResponse({ track: currentTrack });
     } else if (request.subject === 'getProfileName') {
         sendResponse({ profile: profileName });
-    } else if (request.subject === 'getProfileData') {
-        sendResponse({ data: profileData });
     } else if (request.subject === 'getCategories') {
         sendResponse({ categories: categories });
     } else if (request.subject === 'getLabels') {
         sendResponse({ labels: labels });
+    } else if (request.subject === 'getCurrentTrackCategory') {
+        var categoryId = getTrackCategory(profileData, currentTrack);
+        sendResponse({ categoryId: categoryId});
+    } else if (request.subject === 'getCurrentTrackLabels') {
+        var labelIds = getTrackLabels(profileData, currentTrack);
+        sendResponse({ labelIds: labelIds});
     } else if (request.subject === 'setCurrentTrackCategory') {
         var track;
         if  (trackHasCategory(profileData, currentTrack)) {
@@ -87,8 +91,42 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         track.labels.push(request.labelId);
         saveProfile(profileData, profileName);
         return true;
+    } else if (request.subject === 'removeCurrentTrackLabel') {
+        if (!trackHasCategory(profileData, currentTrack)) {
+            sendResponse('ERROR: track does not have a category');
+        }
+        var track = getTrack(profileData, currentTrack);
+        if (!arrayContains(track.labels, request.labelId)) {
+            sendResponse('ERROR: label is not on track');
+        }
+        var index = track.labels.indexOf(request.labelId);
+        if (index > -1) {
+            track.labels.splice(index, 1);
+        }
+        saveProfile(profileData, profileName);
+        return true;
     }
 });
+
+function getTrackCategory(profileData, track) {
+    var categoryId;
+    categories.forEach(function(category) {
+        if (profileData[category.id]) {
+            profileData[category.id].forEach(function(entry) {
+                if (track.name === entry.name && track.uploader === entry.uploader) {
+                    categoryId = category.id;
+                }
+            });
+        }
+    });
+    return categoryId;
+}
+
+function getTrackLabels(profileData, track) {
+    if (trackHasCategory(profileData, track)) {
+        return getTrack(profileData, track).labels;
+    }
+}
 
 function deleteTrack(profileData, track) {
     categories.forEach(function(category) {

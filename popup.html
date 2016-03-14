@@ -3,12 +3,38 @@
 <html>
 	<head>
 		<title>Soundcloud profile rater</title>
+		<script src="jquery-2.2.1.min.js"></script>
 		<script src="popup.js"></script>
+		<script src="/bootstrap/bootstrap.min.js"></script>
+		<!-- Bootstrap core CSS -->
+        <link href="/bootstrap/bootstrap.css" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="popup.css">
 	</head>
 
-	<body>
-		<div id="category-buttons"></div>
+	<body tabindex="1">
+		<h4>Category</h4>
+		<div id="category-buttons" class="btn-group" data-toggle="buttons"></div>
+
+		<h4>Labels</h4>
+		<div id="label-buttons" data-toggle="buttons"></div>
+
+		<h4>Profile info</h4>
+		<div id="summary">
+			<h5>Total categorized songs</h5>
+			<div id="total-categorized-songs">23</div>
+			<h5>Percent reposts</h5>
+			<div id="repost-percent">100%</div>
+		</div>
+
+		<div id="category-info">
+			<h5>Category summary</h5>
+			<div id="category-percent">Like: 30%, Dislike: 50%, Okay: 20%</div>
+		</div>
+
+		<div id="label-info">
+			<h5>Label summary</h5>
+			<div id="label-percent">Mix: 10%, Originals: 40%, Remixes: 80%</div>
+		</div>
 
 		<h1>LOTS OF INFO</h1>
 		<div id="info">INFO HERE</div>
