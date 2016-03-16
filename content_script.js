@@ -32,6 +32,11 @@ function getTrackInfo(trackLink) {
 	var track = trackLink.substr(1); // strip leading /
 	track = track.split('/'); // place [uploader] in track[0] and [track_name] in track[1]
 
+	// if the song is in a playlist (formatted as [track_name]?[playlist_name]),
+	// remove the '?' and everything after
+	var index = track[1].indexOf('?');
+	track[1] = track[1].substring(0, index != -1 ? index : track[1].length);
+
 	var allStreamTracks = document.querySelectorAll('.soundList__item');
 	var profile;
 	var date;
