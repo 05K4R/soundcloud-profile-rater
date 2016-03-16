@@ -14,6 +14,25 @@ chrome.runtime.sendMessage({'subject': 'getCurrentTrackLabels'}, function(respon
 	activateLabelButtons(response.labelIds);
 });
 
+updateTextFields();
+
+
+
+chrome.runtime.sendMessage({'subject': 'getCurrentTrack'}, function(response) {
+	setChildTextNode('info', JSON.stringify(response.track));
+});
+
+
+function updateTextFields() {
+	chrome.runtime.sendMessage({'subject': 'getTotalCategorizedTracks'}, function(response) {
+		setChildTextNode('total-categorized-tracks', response.amount);
+	});
+
+	chrome.runtime.sendMessage({'subject': 'getPercentReposts'}, function(response) {
+		setChildTextNode('repost-percent', response.percent + '%');
+	});
+}
+
 function setChildTextNode(elementId, text) {
 	document.getElementById(elementId).innerText = text;
 }
@@ -51,6 +70,7 @@ function setupCategoryButtons(categories) {
 				'categoryId': category.id
 			}, function(response) {
 				setChildTextNode('info', JSON.stringify(response));
+				updateTextFields();
 			});
 		};
 		categoryElement.appendChild(element);
@@ -83,6 +103,7 @@ function setupLabelButtons(labels) {
 					'labelId': label.id
 				}, function(response) {
 					setChildTextNode('info', JSON.stringify(response));
+					updateTextFields();
 				});
 			} else {
 				chrome.runtime.sendMessage({
@@ -90,6 +111,7 @@ function setupLabelButtons(labels) {
 					'labelId': label.id
 				}, function(response) {
 					setChildTextNode('info', JSON.stringify(response));
+					updateTextFields();
 				});
 			}
 		};

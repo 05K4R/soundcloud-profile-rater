@@ -43,6 +43,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         profileName = request.profile;
 
         updateProfileData(profileName);
+        sendResponse();
         return true;
     } else if (request.subject === 'getCurrentTrack') {
         sendResponse({ track: currentTrack });
@@ -54,10 +55,18 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         sendResponse({ labels: labels });
     } else if (request.subject === 'getCurrentTrackCategory') {
         var categoryId = getTrackCategory(profileData, currentTrack);
-        sendResponse({ categoryId: categoryId});
+        sendResponse({ categoryId: categoryId });
     } else if (request.subject === 'getCurrentTrackLabels') {
         var labelIds = getTrackLabels(profileData, currentTrack);
-        sendResponse({ labelIds: labelIds});
+        sendResponse({ labelIds: labelIds });
+    } else if (request.subject === 'getTotalCategorizedTracks') {
+        var amount = getTotalCategorizedTracks(profileData);
+        sendResponse({ amount: amount });
+    } else if (request.subject === 'getPercentReposts') {
+        var reposts = getTotalReposts(profileData);
+        var totalTracks = getTotalPosts(profileData);
+        percent = (totalTracks != 0 ? reposts / totalTracks : 0) * 100;
+        sendResponse({ percent: percent });
     } else if (request.subject === 'setCurrentTrackCategory') {
         var track;
         if  (trackHasCategory(profileData, currentTrack)) {
@@ -79,6 +88,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         }
         profileData[request.categoryId].push(track);
         saveProfile(profileData, profileName);
+        sendResponse();
         return true;
     } else if (request.subject === 'addCurrentTrackLabel') {
         if (!trackHasCategory(profileData, currentTrack)) {
@@ -90,6 +100,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         }
         track.labels.push(request.labelId);
         saveProfile(profileData, profileName);
+        sendResponse();
         return true;
     } else if (request.subject === 'removeCurrentTrackLabel') {
         if (!trackHasCategory(profileData, currentTrack)) {
@@ -104,9 +115,43 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             track.labels.splice(index, 1);
         }
         saveProfile(profileData, profileName);
+        sendResponse();
         return true;
     }
 });
+
+function getTotalPosts(profileData) {
+    return getTotalReposts(profileData) + getTotalCategorizedTracks(profileData);
+}
+
+function getTotalReposts(profileData) {
+    var reposts = 0;
+    tracks = getAllCategorizedTracks(profileData);
+    tracks.forEach(function(track) {
+        reposts += track.dates.length - 1;
+    });
+    return reposts;
+}
+
+function getAllCategorizedTracks(profileData) {
+    tracks = [];
+    categories.forEach(function(category) {
+        if (profileData[category.id]) {
+            tracks = tracks.concat(profileData[category.id]);
+        }
+    });
+    return tracks;
+}
+
+function getTotalCategorizedTracks(profileData) {
+    var amount = 0;
+    categories.forEach(function(category) {
+        if (profileData[category.id]) {
+            amount += profileData[category.id].length;
+        }
+    })
+    return amount;
+}
 
 function getTrackCategory(profileData, track) {
     var categoryId;
