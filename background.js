@@ -67,6 +67,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         var totalTracks = getTotalPosts(profileData);
         percent = (totalTracks != 0 ? reposts / totalTracks : 0) * 100;
         sendResponse({ percent: percent });
+    } else if (request.subject === 'getCategoryPercents') {
+        var percents = getCategoryPercents();
+        sendResponse({ percents: percents });
+    } else if (request.subject === 'getLabelPercents') {
+        var percents = getLabelPercents();
+        sendResponse({ percents: percents });
     } else if (request.subject === 'setCurrentTrackCategory') {
         var track;
         if  (trackHasCategory(profileData, currentTrack)) {
@@ -119,6 +125,51 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         return true;
     }
 });
+
+function getLabelPercents() {
+    var total = getTotalCategorizedTracks(profileData);
+    var percents = [];
+    labels.forEach(function(label) {
+        count = 0;
+        categories.forEach(function(category) {
+            if (profileData[category.id]) {
+                profileData[category.id].forEach(function(track) {
+                    if (arrayContains(track.labels, label.id)) {
+                        count += 1;
+                    }
+                });
+            }
+        });
+        percents.push({
+            id: label.id,
+            name: label.name,
+            percent: total ? count / total * 100 : 0
+        });
+    });
+    return percents;
+}
+
+function getCategoryPercents() {
+    var total = getTotalCategorizedTracks(profileData);
+    var percents = [];
+    categories.forEach(function(category) {
+        if (profileData[category.id]) {
+            var tracks = profileData[category.id].length;
+            percents.push({
+                id: category.id,
+                name: category.name,
+                percent: tracks / total * 100
+            });
+        } else {
+            percents.push({
+                id: category.id,
+                name: category.name,
+                percent: 0
+            });
+        }
+    });
+    return percents;
+}
 
 function getTotalPosts(profileData) {
     return getTotalReposts(profileData) + getTotalCategorizedTracks(profileData);

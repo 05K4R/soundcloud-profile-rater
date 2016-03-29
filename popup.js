@@ -31,6 +31,28 @@ function updateTextFields() {
 	chrome.runtime.sendMessage({'subject': 'getPercentReposts'}, function(response) {
 		setChildTextNode('repost-percent', response.percent + '%');
 	});
+
+	chrome.runtime.sendMessage({'subject': 'getCategoryPercents'}, function(response) {
+		var string = '';
+		response.percents.forEach(function(category) {
+			if (string != '') {
+				string += ', ';
+			}
+			string += category.name + ': ' + category.percent + '%';
+		});
+		setChildTextNode('category-percent', string);
+	});
+
+	chrome.runtime.sendMessage({'subject': 'getLabelPercents'}, function(response) {
+		var string = '';
+		response.percents.forEach(function(label) {
+			if (string != '') {
+				string += ', ';
+			}
+			string += label.name + ': ' + label.percent + '%';
+		});
+		setChildTextNode('label-percent', string);
+	});
 }
 
 function setChildTextNode(elementId, text) {
