@@ -17,12 +17,6 @@ chrome.runtime.sendMessage({'subject': 'getCurrentTrackLabels'}, function(respon
 updateTextFields();
 
 
-
-chrome.runtime.sendMessage({'subject': 'getCurrentTrack'}, function(response) {
-	setChildTextNode('info', JSON.stringify(response.track));
-});
-
-
 function updateTextFields() {
 	chrome.runtime.sendMessage({'subject': 'getTotalCategorizedTracks'}, function(response) {
 		setChildTextNode('total-categorized-tracks', response.amount);

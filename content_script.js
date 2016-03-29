@@ -14,9 +14,7 @@ var initialObserver = new MutationObserver(function(mutations, observer) {
 				date: trackInfo.date,
 				profile: trackInfo.profile
 			},
-			function(response) {
-				console.log('Response: ' + response);
-			}
+			function(response) {}
 		);
 	}
 });
