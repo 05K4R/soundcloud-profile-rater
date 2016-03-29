@@ -11,7 +11,7 @@ A change log for (hopefully) all changes made to this program. Categorizing and/
 ### Fixed
 - Fix event page persistence.
 
-## 0.1.0
+## 0.1.0 - 2016-03-30
 ### Added
 - Add ability to rate songs in the Soundcloud stream when browsing the stream.
 - Add default categories:
