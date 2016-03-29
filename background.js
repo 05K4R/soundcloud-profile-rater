@@ -296,7 +296,7 @@ chrome.runtime.onInstalled.addListener(function() {
                 // That fires when a page's URL contains 'soundcloud.com/stream' ...
                 conditions: [
                     new chrome.declarativeContent.PageStateMatcher({
-                        pageUrl: { urlContains: 'soundcloud.com/stream' },
+                        pageUrl: { urlContains: 'soundcloud.com' },
                     })
                 ],
                 // And shows the extension's page action.

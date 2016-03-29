@@ -3,7 +3,6 @@ MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 var initialTarget = document.querySelector('.playControls__soundBadge');
 var initialObserver = new MutationObserver(function(mutations, observer) {
 	var currentTrackTarget = document.querySelector('.playbackSoundBadge__title');
-
 	if (currentTrackTarget) {
 		var trackInfo = getTrackInfo(currentTrackTarget.getAttribute('href'));
 
@@ -48,8 +47,17 @@ function getTrackInfo(trackLink) {
 
 		// if the current playing song is found, take the reposter value and date
 		if (title.getAttribute('href') === trackLink) {
-			profile = item.querySelector('.soundContext__usernameLink').getAttribute('href');
+
+			// if the user is on the stream: get the relevant user
+			// otherwise: assume that the text after the hostname is the current profile
+			if (window.location.pathname.startsWith('/stream')) {
+				profile = item.querySelector('.soundContext__usernameLink').getAttribute('href');
+			} else {
+				profile = window.location.pathname;
+			}
 			profile = profile.substr(1);
+			var slashIndex = profile.indexOf('/');
+			profile = profile.substring(0, slashIndex != -1 ? slashIndex : profile.length);
 
 			date = item.querySelector('.relativeTime').getAttribute('datetime');
 			break;

@@ -20,7 +20,7 @@
 
 	"content_scripts": [
 		{
-			"matches": [ "https://soundcloud.com/stream"],
+			"matches": [ "*://soundcloud.com/*"],
 			"js": ["content_script.js"],
 			"run_at": "document_end"
 		}
