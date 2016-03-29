@@ -1,0 +1,33 @@
+{
+	"manifest_version": 2,
+
+	"name": "Soundcloud profile rater",
+	"description": "Allows you to rate posts or reposts by profiles, determining if they're worth following.",
+	"version": "0.1.0",
+
+	"permissions": [
+		"activeTab",
+		"storage",
+		"declarativeContent"
+	],
+
+	"background": {
+		"persistent": false,
+		"scripts": [
+			"background.js"
+		]
+	},
+
+	"content_scripts": [
+		{
+			"matches": [ "https://soundcloud.com/stream"],
+			"js": ["content_script.js"],
+			"run_at": "document_end"
+		}
+	],
+
+	"page_action": {
+		"default_title": "Rate song",
+		"default_popup": "popup.html"
+	}
+}
