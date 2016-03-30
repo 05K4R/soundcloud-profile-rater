@@ -4,6 +4,7 @@ A change log for (hopefully) all changes made to this program. Categorizing and/
 ## [Unreleased]
 ### Added
 - Add ability to rate songs on profile pages.
+- Add ability to rate songs in playlists.
 
 ### Changed
 - Change page action to browser action, this enables rating when playing a track in different tab.

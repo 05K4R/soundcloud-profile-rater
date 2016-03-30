@@ -41,24 +41,29 @@ function getTrackInfo(trackLink) {
 	for (var i = 0; i < allStreamTracks.length; i++) {
 		var item = allStreamTracks[i];
 
-		var title = item.querySelector('.soundTitle__title');
+		if (isInPlaylist(trackLink) && item.querySelector('.playlist')) {
+			var playlist = getPlaylistName(trackLink);
+			playlist = playlist.substring(4);
+			playlist = '/' + playlist;
 
-		// if the current playing song is found, take the reposter value and date
-		if (title.getAttribute('href') === trackLink) {
+			var title = item.querySelector('.soundTitle__title');
 
-			// if the user is on the stream: get the relevant user
-			// otherwise: assume that the text after the hostname is the current profile
-			if (window.location.pathname.startsWith('/stream')) {
-				profile = item.querySelector('.soundContext__usernameLink').getAttribute('href');
-			} else {
-				profile = window.location.pathname;
+			if (title.getAttribute('href') === playlist) {
+				var result = getProfileAndDate(item);
+				profile = result.profile;
+				date = result.date;
+				break;
 			}
-			profile = profile.substr(1);
-			var slashIndex = profile.indexOf('/');
-			profile = profile.substring(0, slashIndex != -1 ? slashIndex : profile.length);
+		} else if (!isInPlaylist(trackLink) && !item.querySelector('.playlist')) {
+			var title = item.querySelector('.soundTitle__title');
 
-			date = item.querySelector('.relativeTime').getAttribute('datetime');
-			break;
+			// if the current playing song is found, take the reposter value and date
+			if (title.getAttribute('href') === trackLink) {
+				var result = getProfileAndDate(item);
+				profile = result.profile;
+				date = result.date;
+				break;
+			}
 		}
 	}
 
@@ -68,4 +73,38 @@ function getTrackInfo(trackLink) {
 		profile: profile,
 		date: date
 	}
+}
+
+function getProfileAndDate(streamItem) {
+	// if the current user is on the stream: get the relevant user
+	// otherwise: assume that the text after the hostname in the URL is the current profile
+	var profile;
+
+	if (window.location.pathname.startsWith('/stream')) {
+		profile = streamItem.querySelector('.soundContext__usernameLink').getAttribute('href');
+		console.log('1:' + profile);
+	} else {
+		profile = window.location.pathname;
+		console.log('2:' + profile);
+	}
+	profile = profile.substr(1);
+	var slashIndex = profile.indexOf('/');
+	profile = profile.substring(0, slashIndex != -1 ? slashIndex : profile.length);
+
+	var date = streamItem.querySelector('.relativeTime').getAttribute('datetime');
+
+	return {
+		profile: profile,
+		date: date
+	}
+}
+
+function isInPlaylist(trackLink) {
+	if (trackLink.indexOf('?in=') != -1) return true;
+	else return false;
+}
+
+function getPlaylistName(trackLink) {
+	var playlistIndex = trackLink.indexOf('?in=');
+	return trackLink.substring(playlistIndex, trackLink.length);
 }
