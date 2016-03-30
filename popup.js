@@ -84,7 +84,6 @@ function setupCategoryButtons(categories) {
 				'subject': 'setCurrentTrackCategory',
 				'categoryId': category.id
 			}, function(response) {
-				setChildTextNode('info', JSON.stringify(response));
 				updateTextFields();
 			});
 		};
