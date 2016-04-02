@@ -22,7 +22,7 @@ function updateTextFields() {
 	});
 
 	chrome.runtime.sendMessage({'subject': 'getPercentReposts'}, function(response) {
-		setChildTextNode('repost-percent', response.percent + '%');
+		setChildTextNode('repost-percent', Math.round(response.percent * 100) / 100 + '%');
 	});
 
 	chrome.runtime.sendMessage({'subject': 'getCategoryPercents'}, function(response) {
@@ -31,7 +31,7 @@ function updateTextFields() {
 			if (string != '') {
 				string += ', ';
 			}
-			string += category.name + ': ' + category.percent + '%';
+			string += category.name + ': ' + Math.round(category.percent * 100) / 100 + '%';
 		});
 		setChildTextNode('category-percent', string);
 	});
@@ -42,7 +42,7 @@ function updateTextFields() {
 			if (string != '') {
 				string += ', ';
 			}
-			string += label.name + ': ' + label.percent + '%';
+			string += label.name + ': ' + Math.round(label.percent * 100) / 100 + '%';
 		});
 		setChildTextNode('label-percent', string);
 	});
