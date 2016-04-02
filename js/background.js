@@ -54,17 +54,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     } else if (request.subject === 'getLabels') {
         sendResponse({ labels: labels });
     } else if (request.subject === 'getCurrentTrackCategory') {
-        var categoryId = getTrackCategory(profileData, currentTrack);
+        var categoryId = getTrackCategory(currentTrack);
         sendResponse({ categoryId: categoryId });
     } else if (request.subject === 'getCurrentTrackLabels') {
-        var labelIds = getTrackLabels(profileData, currentTrack);
+        var labelIds = getTrackLabels(currentTrack);
         sendResponse({ labelIds: labelIds });
     } else if (request.subject === 'getTotalCategorizedTracks') {
-        var amount = getTotalCategorizedTracks(profileData);
+        var amount = getTotalCategorizedTracks();
         sendResponse({ amount: amount });
     } else if (request.subject === 'getPercentReposts') {
-        var reposts = getTotalReposts(profileData);
-        var totalTracks = getTotalPosts(profileData);
+        var reposts = getTotalReposts();
+        var totalTracks = getTotalPosts();
         percent = (totalTracks != 0 ? reposts / totalTracks : 0) * 100;
         sendResponse({ percent: percent });
     } else if (request.subject === 'getCategoryPercents') {
@@ -75,9 +75,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         sendResponse({ percents: percents });
     } else if (request.subject === 'setCurrentTrackCategory') {
         var track;
-        if  (trackHasCategory(profileData, currentTrack)) {
-            track = getTrack(profileData, currentTrack);
-            deleteTrack(profileData, currentTrack);
+        if  (trackHasCategory(currentTrack)) {
+            track = getTrack(currentTrack);
+            deleteTrack(currentTrack);
         } else {
             track = {
                 name: currentTrack.name,
@@ -93,26 +93,26 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             profileData[request.categoryId] = [];
         }
         profileData[request.categoryId].push(track);
-        saveProfile(profileData, profileName);
+        saveProfile(profileName);
         sendResponse();
         return true;
     } else if (request.subject === 'addCurrentTrackLabel') {
-        if (!trackHasCategory(profileData, currentTrack)) {
+        if (!trackHasCategory(currentTrack)) {
             sendResponse('ERROR: track does not have a category');
         }
-        var track = getTrack(profileData, currentTrack);
+        var track = getTrack(currentTrack);
         if (arrayContains(track.labels, request.labelId)) {
             sendResponse('ERROR: label already added to track');
         }
         track.labels.push(request.labelId);
-        saveProfile(profileData, profileName);
+        saveProfile(profileName);
         sendResponse();
         return true;
     } else if (request.subject === 'removeCurrentTrackLabel') {
-        if (!trackHasCategory(profileData, currentTrack)) {
+        if (!trackHasCategory(currentTrack)) {
             sendResponse('ERROR: track does not have a category');
         }
-        var track = getTrack(profileData, currentTrack);
+        var track = getTrack(currentTrack);
         if (!arrayContains(track.labels, request.labelId)) {
             sendResponse('ERROR: label is not on track');
         }
@@ -120,14 +120,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         if (index > -1) {
             track.labels.splice(index, 1);
         }
-        saveProfile(profileData, profileName);
+        saveProfile(profileName);
         sendResponse();
         return true;
     }
 });
 
 function getLabelPercents() {
-    var total = getTotalCategorizedTracks(profileData);
+    var total = getTotalCategorizedTracks();
     var percents = [];
     labels.forEach(function(label) {
         count = 0;
@@ -150,7 +150,7 @@ function getLabelPercents() {
 }
 
 function getCategoryPercents() {
-    var total = getTotalCategorizedTracks(profileData);
+    var total = getTotalCategorizedTracks();
     var percents = [];
     categories.forEach(function(category) {
         if (profileData[category.id]) {
@@ -171,20 +171,20 @@ function getCategoryPercents() {
     return percents;
 }
 
-function getTotalPosts(profileData) {
-    return getTotalReposts(profileData) + getTotalCategorizedTracks(profileData);
+function getTotalPosts() {
+    return getTotalReposts() + getTotalCategorizedTracks();
 }
 
-function getTotalReposts(profileData) {
+function getTotalReposts() {
     var reposts = 0;
-    tracks = getAllCategorizedTracks(profileData);
+    tracks = getAllCategorizedTracks();
     tracks.forEach(function(track) {
         reposts += track.dates.length - 1;
     });
     return reposts;
 }
 
-function getAllCategorizedTracks(profileData) {
+function getAllCategorizedTracks() {
     tracks = [];
     categories.forEach(function(category) {
         if (profileData[category.id]) {
@@ -194,7 +194,7 @@ function getAllCategorizedTracks(profileData) {
     return tracks;
 }
 
-function getTotalCategorizedTracks(profileData) {
+function getTotalCategorizedTracks() {
     var amount = 0;
     categories.forEach(function(category) {
         if (profileData[category.id]) {
@@ -204,7 +204,7 @@ function getTotalCategorizedTracks(profileData) {
     return amount;
 }
 
-function getTrackCategory(profileData, track) {
+function getTrackCategory(track) {
     var categoryId;
     categories.forEach(function(category) {
         if (profileData[category.id]) {
@@ -218,13 +218,13 @@ function getTrackCategory(profileData, track) {
     return categoryId;
 }
 
-function getTrackLabels(profileData, track) {
-    if (trackHasCategory(profileData, track)) {
-        return getTrack(profileData, track).labels;
+function getTrackLabels(track) {
+    if (trackHasCategory(track)) {
+        return getTrack(track).labels;
     }
 }
 
-function deleteTrack(profileData, track) {
+function deleteTrack(track) {
     categories.forEach(function(category) {
         if (profileData[category.id]) {
             for (var i = 0; i < profileData[category.id].length; i++) {
@@ -238,7 +238,7 @@ function deleteTrack(profileData, track) {
     });
 }
 
-function saveProfile(profileData, profileName) {
+function saveProfile(profileName) {
     profileIdentifier = PROFILE_PREFIX + profileName;
     profile = {};
     profile[profileIdentifier] = profileData;
@@ -247,15 +247,15 @@ function saveProfile(profileData, profileName) {
     });
 }
 
-function trackHasCategory(profileData, track) {
-    if (getTrack(profileData, track)) {
+function trackHasCategory(track) {
+    if (getTrack(track)) {
         return true;
     } else {
         return false;
     }
 }
 
-function getTrack(profileData, track) {
+function getTrack(track) {
     var foundEntry;
     categories.forEach(function(category) {
         if (profileData[category.id]) {
