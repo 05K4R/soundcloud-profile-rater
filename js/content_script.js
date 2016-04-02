@@ -41,29 +41,22 @@ function getTrackInfo(trackLink) {
 	for (var i = 0; i < allStreamTracks.length; i++) {
 		var item = allStreamTracks[i];
 
+		var link;
+
 		if (isInPlaylist(trackLink) && item.querySelector('.playlist')) {
-			var playlist = getPlaylistName(trackLink);
-			playlist = playlist.substring(4);
-			playlist = '/' + playlist;
-
-			var title = item.querySelector('.soundTitle__title');
-
-			if (title.getAttribute('href') === playlist) {
-				var result = getProfileAndDate(item);
-				profile = result.profile;
-				date = result.date;
-				break;
-			}
+			link = getPlaylistName(trackLink);
+			link = '/' + link.substring(4);
 		} else if (!isInPlaylist(trackLink) && !item.querySelector('.playlist')) {
-			var title = item.querySelector('.soundTitle__title');
+			link = trackLink;
+		}
 
-			// if the current playing song is found, take the reposter value and date
-			if (title.getAttribute('href') === trackLink) {
-				var result = getProfileAndDate(item);
-				profile = result.profile;
-				date = result.date;
-				break;
-			}
+		var title = item.querySelector('.soundTitle__title');
+
+		if (title.getAttribute('href') === link) {
+			var result = getProfileAndDate(item);
+			profile = result.profile;
+			date = result.date;
+			break;
 		}
 	}
 

@@ -116,7 +116,6 @@ function setupLabelButtons(labels) {
 					'subject': 'addCurrentTrackLabel',
 					'labelId': label.id
 				}, function(response) {
-					setChildTextNode('info', JSON.stringify(response));
 					updateTextFields();
 				});
 			} else {
@@ -124,7 +123,6 @@ function setupLabelButtons(labels) {
 					'subject': 'removeCurrentTrackLabel',
 					'labelId': label.id
 				}, function(response) {
-					setChildTextNode('info', JSON.stringify(response));
 					updateTextFields();
 				});
 			}
