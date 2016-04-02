@@ -11,6 +11,7 @@ A change log for (hopefully) all changes made to this program. Categorizing and/
 
 ### Fixed
 - Fix event page persistence.
+- Percentages in the popup are now rounded to two decimals.
 
 ### Removed
 - Remove debug field in the popup.
