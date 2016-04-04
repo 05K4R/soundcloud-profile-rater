@@ -2,8 +2,8 @@
 	"manifest_version": 2,
 
 	"name": "Soundcloud profile rater",
-	"description": "Allows you to rate posts or reposts by profiles, determining if they're worth following.",
-	"version": "0.1.0",
+	"description": "Categorize and label tracks posted or reposted by profiles you follow to determine if they are worth to keep following.",
+	"version": "0.2.0",
 
 	"permissions": [
 		"activeTab",
