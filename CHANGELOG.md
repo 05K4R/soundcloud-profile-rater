@@ -1,13 +1,13 @@
 # Change Log
 A change log for (hopefully) all changes made to this program. Categorizing and/or labeling a track is referred to as rating a track in this document.
 
-## [Unreleased]
+## 0.2.0 - 2016-04-04
 ### Added
 - Add ability to rate songs on profile pages.
 - Add ability to rate songs in playlists.
 
 ### Changed
-- Change page action to browser action, this enables rating when playing a track in different tab.
+- Change page action to browser action, this enables rating when playing a track in different a tab.
 
 ### Fixed
 - Fix event page persistence.
