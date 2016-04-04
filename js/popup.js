@@ -16,20 +16,13 @@ chrome.runtime.sendMessage({'subject': 'getCurrentTrackLabels'}, function(respon
 
 updateTextFields();
 
-
-
-chrome.runtime.sendMessage({'subject': 'getCurrentTrack'}, function(response) {
-	setChildTextNode('info', JSON.stringify(response.track));
-});
-
-
 function updateTextFields() {
 	chrome.runtime.sendMessage({'subject': 'getTotalCategorizedTracks'}, function(response) {
 		setChildTextNode('total-categorized-tracks', response.amount);
 	});
 
 	chrome.runtime.sendMessage({'subject': 'getPercentReposts'}, function(response) {
-		setChildTextNode('repost-percent', response.percent + '%');
+		setChildTextNode('repost-percent', Math.round(response.percent * 100) / 100 + '%');
 	});
 
 	chrome.runtime.sendMessage({'subject': 'getCategoryPercents'}, function(response) {
@@ -38,7 +31,7 @@ function updateTextFields() {
 			if (string != '') {
 				string += ', ';
 			}
-			string += category.name + ': ' + category.percent + '%';
+			string += category.name + ': ' + Math.round(category.percent * 100) / 100 + '%';
 		});
 		setChildTextNode('category-percent', string);
 	});
@@ -49,7 +42,7 @@ function updateTextFields() {
 			if (string != '') {
 				string += ', ';
 			}
-			string += label.name + ': ' + label.percent + '%';
+			string += label.name + ': ' + Math.round(label.percent * 100) / 100 + '%';
 		});
 		setChildTextNode('label-percent', string);
 	});
@@ -91,7 +84,6 @@ function setupCategoryButtons(categories) {
 				'subject': 'setCurrentTrackCategory',
 				'categoryId': category.id
 			}, function(response) {
-				setChildTextNode('info', JSON.stringify(response));
 				updateTextFields();
 			});
 		};
@@ -124,7 +116,6 @@ function setupLabelButtons(labels) {
 					'subject': 'addCurrentTrackLabel',
 					'labelId': label.id
 				}, function(response) {
-					setChildTextNode('info', JSON.stringify(response));
 					updateTextFields();
 				});
 			} else {
@@ -132,7 +123,6 @@ function setupLabelButtons(labels) {
 					'subject': 'removeCurrentTrackLabel',
 					'labelId': label.id
 				}, function(response) {
-					setChildTextNode('info', JSON.stringify(response));
 					updateTextFields();
 				});
 			}
